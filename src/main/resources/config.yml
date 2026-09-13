@@ -1,0 +1,57 @@
+# NexusAdmin configuration
+#
+# The design goal here is "cool, powerful abilities" AND "no quiet abuse" at the same time --
+# not by restricting what admins can do, but by making sure nothing they do is ever silent:
+# everything is logged to disk, echoed live to anyone with nexusadmin.watch (a separate
+# permission from having the abilities themselves -- give it to other trusted staff so admin
+# actions are peer-reviewed as they happen, not just recorded for later), and the abilities that
+# act on another player without their consent (freeze, tphere, kill) require the admin to type an
+# actual reason as part of the command, which gets logged word for word.
+
+log:
+  # where the persistent audit log is written, relative to this plugin's data folder
+  file: audit-log.txt
+  # how many recent entries /nexusadmin log can show without digging into the file directly
+  recent-buffer-size: 200
+
+# Live broadcast to anyone with nexusadmin.watch whenever ANY ability below is used, in
+# real time -- this is the actual anti-abuse mechanism, more than the logging itself. A log
+# file only helps after the fact; a live feed means another admin sees it as it happens.
+watch-broadcast:
+  enabled: true
+
+# cooldown (seconds) between uses of the more drastic abilities, per admin -- stops any one of
+# these from being spammed, whether that's genuine abuse or just a fat-fingered repeat click
+cooldowns:
+  smite-seconds: 5
+  kill-seconds: 3
+  tphere-seconds: 10
+
+# abilities that require the admin to type a reason as part of the command (logged verbatim) --
+# all of these act on another player without asking them first, which is exactly the category of
+# action worth a mandatory paper trail
+require-reason:
+  freeze: true
+  tphere: true
+  kill-on-player: true
+
+# The clickable admin panel (a category menu opened by the bare /nexusadmin command, its /admin
+# alias, or /nexusadmin menu explicitly). Everything it does dispatches that plugin's own already
+# -existing admin command (economyadmin, nexussurvival, realms) exactly as if you'd typed it
+# yourself, so its behavior always matches those commands' real permission checks and logging.
+# Only ever shown to nexusadmin.menu (default: op) -- or to a name listed in priority-players below.
+menu:
+  # Whether to also send a one-time clickable "[Open Admin Panel]" chat button on join, to anyone
+  # with nexusadmin.menu (or listed in priority-players). Turn off if you'd rather staff just
+  # remember /admin.
+  join-message-enabled: true
+  # Player names (case-insensitive) who ALWAYS get the admin panel -- the join-chat button and the
+  # bare /nexusadmin (or /admin) command -- regardless of whether nexusadmin.menu actually resolves
+  # true for them. This exists for exactly one situation: a server owner or trusted staffer whose
+  # permissions plugin/setup doesn't actually grant them a "default: op" node the way they'd
+  # expect, and who shouldn't be locked out of their own admin panel over that. Keep this list
+  # short -- it's a safety net, not a substitute for setting up nexusadmin.menu properly -- and
+  # requires a server restart (or plugin reload) after editing, since config.yml is only read on
+  # startup.
+  priority-players:
+    - RealSociety5107
